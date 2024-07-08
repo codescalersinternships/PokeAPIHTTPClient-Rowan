@@ -5,10 +5,15 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 )
 
 // GetPokemonByname is a method of Client struct, used to fetch pokemon by its name field
 func (c *Client) GetPokemonByname(ctx context.Context, pokemonName string) (Pokemon, error) {
+	return c.retryGetPokemonByName(ctx, pokemonName, 3)
+}
+
+func (c *Client) getPokemonBynameHelper(ctx context.Context, pokemonName string) (Pokemon, error) {
 	request, err := http.NewRequestWithContext(ctx, http.MethodGet, c.apiURL+"/api/v2/pokemon/"+pokemonName, nil)
 	if err != nil {
 		return NewPokemon(), err
@@ -55,4 +60,17 @@ func (c *Client) ListAllPokemon(ctx context.Context) (PokemonArray, error) {
 		return PokemonArray{}, fmt.Errorf("error decoding into json, %v", err)
 	}
 	return poke, nil
+}
+func (c *Client) retryGetPokemonByName(ctx context.Context, pokemonName string, retryAttempts int) (Pokemon, error) {
+	var err error
+	var pokemon Pokemon
+	for i := 0; i < retryAttempts; i++ {
+		pokemon, err = c.getPokemonBynameHelper(ctx, pokemonName)
+		if err == nil {
+			return pokemon, err
+		}
+		time.Sleep(1 * time.Second)
+
+	}
+	return pokemon, err
 }
