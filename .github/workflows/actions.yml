@@ -14,9 +14,9 @@ jobs:
         with:
           go-version: '1.22.x'
       - name: Build
-        run: go build -o client api/client.go && go build -o models api/models.go 
-      # - name: Test with the Go CLI
-      #   run: go test ./...
+        run: go build -o client api/client.go && go build -o models api/models.go && go build -o maincli cli/main.go
+      - name: Test with the Go CLI
+        run: go test ./...
   Lint:
     runs-on: ubuntu-latest
 
