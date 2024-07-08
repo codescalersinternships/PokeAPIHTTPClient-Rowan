@@ -10,6 +10,11 @@ type Pokemon struct {
 	Weight         int    `json:"weight"`
 }
 
+// PokemonArray is an array of Pokemon structs to get parsed later
+type PokemonArray struct {
+	Pokemons []Pokemon `json:"results"`
+}
+
 // NewPokemon is our Pokemon initializer
 func NewPokemon() Pokemon {
 	return Pokemon{}
